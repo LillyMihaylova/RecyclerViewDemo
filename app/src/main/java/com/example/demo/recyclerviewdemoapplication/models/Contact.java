@@ -4,6 +4,7 @@ public class Contact {
 
     private String name;
     private String phoneNumber;
+    private boolean isInPhone;
 
     public String getName() {
         return name;
@@ -19,5 +20,13 @@ public class Contact {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public boolean isInPhone() {
+        return isInPhone;
+    }
+
+    public void setInPhone(boolean inPhone) {
+        isInPhone = inPhone;
     }
 }

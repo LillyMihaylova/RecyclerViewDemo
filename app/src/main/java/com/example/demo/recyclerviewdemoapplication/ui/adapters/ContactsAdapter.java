@@ -1,6 +1,5 @@
 package com.example.demo.recyclerviewdemoapplication.ui.adapters;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -17,15 +16,11 @@ import java.util.ArrayList;
 public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyContactViewHolder> {
 
     private ArrayList<Contact> contactsList;
-    private Context context;
-    private MyContactViewHolder.OnContactItemClick lister;
+    private MyContactViewHolder.OnContactItemClick listener;
 
-    public ContactsAdapter(Context context, ArrayList<Contact> contacts,
-                           MyContactViewHolder.OnContactItemClick lister) {
-        contactsList = contacts;
-        this.context = context;
-        this.lister = lister;
-
+    public ContactsAdapter(MyContactViewHolder.OnContactItemClick listener) {
+        contactsList = new ArrayList<>();
+        this.listener = listener;
     }
 
     @NonNull
@@ -34,7 +29,7 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyCont
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.layout_contact, parent, false);
 
-        return new MyContactViewHolder(itemView, lister);
+        return new MyContactViewHolder(itemView, listener);
     }
 
     @Override
@@ -45,9 +40,14 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.MyCont
         holder.grpContact.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                lister.onContactClick(position);
+                listener.onContactClick(position);
             }
         });
+    }
+
+    public void addItems(ArrayList<Contact> contacts) {
+        this.contactsList = contacts;
+        notifyDataSetChanged();
     }
 
     @Override

@@ -1,55 +1,94 @@
 package com.example.demo.recyclerviewdemoapplication.ui.activities;
 
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.widget.Toast;
+import android.support.v7.widget.Toolbar;
 
 import com.example.demo.recyclerviewdemoapplication.R;
 import com.example.demo.recyclerviewdemoapplication.models.Contact;
-import com.example.demo.recyclerviewdemoapplication.ui.adapters.ContactsAdapter;
+import com.example.demo.recyclerviewdemoapplication.ui.adapters.FragmentPagerAdapter;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements
-        ContactsAdapter.MyContactViewHolder.OnContactItemClick {
+public class MainActivity extends AppCompatActivity {
+
 
     private ArrayList<Contact> contacts;
     private Contact contact;
-    private RecyclerView recyclerView;
-    private ContactsAdapter adapter;
+
+    private ViewPager viewPager;
+    private TabLayout tabLayout;
+    private FragmentPagerAdapter pagerAdapter;
+    private Toolbar toolbar;
+    private boolean isTabsCreated;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         contacts = new ArrayList<>();
 
+        viewPager = findViewById(R.id.view_pager);
+        tabLayout = findViewById(R.id.tab_layout);
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        setupTabs();
         buildContactsList();
-        setupRecyclerView();
     }
 
     private void buildContactsList() {
-        for (int i = 0; i < 100; i++) {
+        for (int i = 1; i <= 30; i++) {
             contact = new Contact();
             contact.setName("George" + i);
             contact.setPhoneNumber("08754564" + i);
+            if (i % 2 == 0) {
+                contact.setInPhone(true);
+            } else {
+                contact.setInPhone(false);
+            }
             contacts.add(contact);
         }
+        pagerAdapter.setContacts(contacts);
+
     }
 
-    private void setupRecyclerView() {
-        recyclerView = findViewById(R.id.recycler_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new ContactsAdapter(this, contacts, this);
-        recyclerView.setAdapter(adapter);
+    private void setupTabs() {
+        if (!isTabsCreated) {
+            tabLayout.addTab(tabLayout.newTab().setText("SIM"));
+            tabLayout.addTab(tabLayout.newTab().setText("PHONE"));
+            tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+            isTabsCreated = true;
+        }
+
+        pagerAdapter = new FragmentPagerAdapter
+                (getSupportFragmentManager(), tabLayout.getTabCount());
+        pagerAdapter.notifyDataSetChanged();
+        viewPager.setAdapter(pagerAdapter);
+
+
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                viewPager.setCurrentItem(tab.getPosition());
+                pagerAdapter.setContacts(contacts);
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+            }
+        });
+
     }
 
-    @Override
-    public void onContactClick(int position) {
-        String toastText = "Contact position: " + position;
-        Toast.makeText(this, toastText,
-                Toast.LENGTH_SHORT).show();
-    }
+
 }
